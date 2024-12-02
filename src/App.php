@@ -14,7 +14,7 @@ class App
     static function run()
     {
         self::$console = new Console();
-        self::$console->setForegroundColor(Color::RED);
+        self::$console->setForegroundColor(Color::MAGENTA);
 
         self::$console->println("                                     |__");
         self::$console->println("                                     |\\/");

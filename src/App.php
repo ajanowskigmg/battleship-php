@@ -125,9 +125,6 @@ class App
             $position = readline("");
 
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
-            if ($isHit) {
-
-            }
 
             if ($isHit) {
                 self::$console->setForegroundColor(Color::RED);

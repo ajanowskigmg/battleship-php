@@ -18,7 +18,7 @@ class Letter
     {
         if(!in_array($letter, self::$letters))
         {
-            throw new InvalidArgumentException("Letter not exist");
+            throw new InvalidArgumentException("Letter not exist.");
         }
 
         return $letter;

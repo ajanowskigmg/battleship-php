@@ -125,6 +125,11 @@ class App
 
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
             if ($isHit) {
+
+            }
+
+            if ($isHit) {
+                self::$console->setForegroundColor(Color::RED);
                 self::beep();
                 self::$console->println("                \\         .  ./");
                 self::$console->println("              \\      .:\" \";'.:..\" \"   /");
@@ -134,16 +139,20 @@ class App
                 self::$console->println("            -   (\\- |  \\ /  |  /)  -");
                 self::$console->println("                 -\\  \\     /  /-");
                 self::$console->println("                   \\  \\   /  /");
+                self::$console->println("Yeah ! Nice hit !");
+            } else {
+                self::$console->setForegroundColor(Color::CADET_BLUE);
+                self::$console->println("Miss");
             }
-
-            echo $isHit ? "Yeah ! Nice hit !" : "Miss";
-            self::$console->println();
+            self::$console->resetForegroundColor();
 
             $position = self::getRandomPosition();
             $isHit = GameController::checkIsHit(self::$myFleet, $position);
             self::$console->println();
-            printf("Computer shoot in %s%s and %s", $position->getColumn(), $position->getRow(), $isHit ? "hit your ship !\n" : "miss");
+            self::groupVisualy();
             if ($isHit) {
+                self::$console->setForegroundColor(Color::CADET_BLUE);
+                self::$console->println(sprintf("Computer shoot in %s%s and hit your ship !", $position->getColumn(), $position->getRow()));
                 self::beep();
 
                 self::$console->println("                \\         .  ./");
@@ -155,12 +164,21 @@ class App
                 self::$console->println("                 -\\  \\     /  /-");
                 self::$console->println("                   \\  \\   /  /");
 
+            } else {
+                self::$console->setForegroundColor(Color::CADET_BLUE);
+                self::$console->println(sprintf("Computer shoot in %s%s and miss", $position->getColumn(), $position->getRow()));
             }
+
+            self::$console->resetForegroundColor();
 
 //            exit();
         }
     }
 
+    private static function groupVisualy()
+    {
+        self::$console->println("//" . str_repeat('-', 30) . "//");
+    }
     public static function parsePosition($input)
     {
         $letter = substr($input, 0, 1);

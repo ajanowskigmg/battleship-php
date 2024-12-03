@@ -120,6 +120,7 @@ class App
         self::$console->resetForegroundColor();
 
         while (true) {
+            self::groupVisualy("Player turn");
             self::$console->printColoredLn("Player, it's your turn", Color::YELLOW);
             self::$console->println("Enter coordinates for your shot :");
             $position = readline("");
@@ -146,7 +147,7 @@ class App
 
             $position = self::getRandomPosition();
             $isHit = GameController::checkIsHit(self::$myFleet, $position);
-            self::groupVisualy();
+            self::groupVisualy("Computer turn");
             if ($isHit) {
                 self::$console->setForegroundColor(Color::RED);
                 self::$console->println(sprintf("Computer shoot in %s%s and hit your ship !", $position->getColumn(), $position->getRow()));
@@ -167,14 +168,17 @@ class App
             }
 
             self::$console->resetForegroundColor();
-            self::groupVisualy();
         }
     }
 
-    private static function groupVisualy()
+    private static function groupVisualy($text = "")
     {
+        $length = 60 - strlen($text) - 2;
+
+        $length1 = ceil($length / 2);
+        $length2 = $length - $length1;
         self::$console->println();
-        self::$console->println("//" . str_repeat('-', 60) . "//");
+        self::$console->println("//" . str_repeat('-', $length1) . ' ' . $text . ' ' . str_repeat('-', $length2) . "//");
         self::$console->println();
     }
     public static function parsePosition($input)

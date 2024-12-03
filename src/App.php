@@ -10,8 +10,8 @@ class App
     private static $myFleet = array();
     private static $enemyFleet = array();
     private static $console;
-    private static $hitCount = 0;
     private static $playerHitCount = 0;
+    private static $computerShotsCount = 0;
 
     static function run()
     {
@@ -127,11 +127,10 @@ class App
 
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
             if ($isHit) {
-                self::$hitCount++;
                 self::$playerHitCount++;
                 self::beep();
                 
-                if (self::$playerHitCount >= 17) {
+                if (self::$playerHitCount >= 2) {
                     self::$console->println("You are the winner!");
                     exit();
                 }
@@ -152,6 +151,13 @@ class App
             $position = self::getRandomPosition();
             $isHit = GameController::checkIsHit(self::$myFleet, $position);
             self::$console->println();
+            self::$computerShotsCount++;
+            
+            if (self::$computerShotsCount >= 2) {
+                self::$console->println("You lost!");
+                exit();
+            }
+            
             printf("Computer shoot in %s%s and %s", $position->getColumn(), $position->getRow(), $isHit ? "hit your ship !\n" : "miss");
             if ($isHit) {
                 self::beep();

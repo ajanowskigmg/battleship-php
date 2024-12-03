@@ -10,6 +10,8 @@ class App
     private static $myFleet = array();
     private static $enemyFleet = array();
     private static $console;
+    private static $hitCount = 0;
+    private static $playerHitCount = 0;
 
     static function run()
     {
@@ -125,7 +127,15 @@ class App
 
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
             if ($isHit) {
+                self::$hitCount++;
+                self::$playerHitCount++;
                 self::beep();
+                
+                if (self::$playerHitCount >= 17) {
+                    self::$console->println("You are the winner!");
+                    exit();
+                }
+                
                 self::$console->println("                \\         .  ./");
                 self::$console->println("              \\      .:\" \";'.:..\" \"   /");
                 self::$console->println("                  (M^^.^~~:.'\" \").");

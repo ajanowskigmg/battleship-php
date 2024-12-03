@@ -126,6 +126,10 @@ class App
             $position = readline("");
 
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
+            if (GameController::checkIsGameOver(self::$enemyFleet)) {
+                self::$console->println("You are the winner!");
+                exit();
+            }
 
             if ($isHit) {
                 self::$console->setForegroundColor(Color::RED);
@@ -147,6 +151,12 @@ class App
 
             $position = self::getRandomPosition();
             $isHit = GameController::checkIsHit(self::$myFleet, $position);
+
+            if (GameController::checkIsGameOver(self::$enemyFleet)) {
+                self::$console->println("You lost");
+                exit();
+            }
+
             self::groupVisualy("Computer turn");
             if ($isHit) {
                 self::$console->setForegroundColor(Color::RED);

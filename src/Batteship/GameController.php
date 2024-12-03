@@ -31,6 +31,17 @@ class GameController
         return false;
     }
 
+    public static function checkIsGameOver(array $fleet)
+    {
+        foreach ($fleet as $ship) {
+            if (count($ship->getPositions()) > 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static function initializeShips()
     {
         return Array(

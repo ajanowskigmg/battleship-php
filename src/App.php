@@ -77,12 +77,12 @@ class App
     {
         self::$myFleet = GameController::initializeShips();
 
-        self::$console->println("Please position your fleet (Game board has size from A to H and 1 to 8) :");
+        self::$console->printColoredLn("Please position your fleet (Game board has size from A to H and 1 to 8) :", Color::YELLOW);
 
         foreach (self::$myFleet as $ship) {
 
             self::$console->println();
-            printf("Please enter the positions for the %s (size: %s)", $ship->getName(), $ship->getSize());
+            self::$console->printColoredLn(sprintf("Please enter the positions for the %s (size: %s)", $ship->getName(), $ship->getSize()), Color::YELLOW);
 
             for ($i = 1; $i <= $ship->getSize(); $i++) {
                 printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
@@ -119,7 +119,7 @@ class App
 
         while (true) {
             self::$console->println("");
-            self::$console->println("Player, it's your turn");
+            self::$console->printColoredLn("Player, it's your turn", Color::YELLOW);
             self::$console->println("Enter coordinates for your shot :");
             $position = readline("");
 
@@ -151,7 +151,7 @@ class App
             self::$console->println();
             self::groupVisualy();
             if ($isHit) {
-                self::$console->setForegroundColor(Color::CADET_BLUE);
+                self::$console->setForegroundColor(Color::RED);
                 self::$console->println(sprintf("Computer shoot in %s%s and hit your ship !", $position->getColumn(), $position->getRow()));
                 self::beep();
 
@@ -177,7 +177,7 @@ class App
 
     private static function groupVisualy()
     {
-        self::$console->println("//" . str_repeat('-', 30) . "//");
+        self::$console->println("//" . str_repeat('-', 60) . "//");
     }
     public static function parsePosition($input)
     {

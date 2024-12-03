@@ -7,7 +7,7 @@ use InvalidArgumentException;
 class GameController
 {
 
-    public static function checkIsHit(array $fleet, $shot)
+    public static function checkIsHit(array &$fleet, $shot)
     {
         if ($fleet == null) {
             throw new InvalidArgumentException("ships is null");
@@ -20,12 +20,26 @@ class GameController
         foreach ($fleet as $ship) {
             foreach ($ship->getPositions() as $position) {
                 if ($position == $shot) {
+                    $index = array_search($position, $ship->getPositions());
+                    unset($ship->getPositions()[$index]);
+
                     return true;
                 }
             }
         }
 
         return false;
+    }
+
+    public static function checkIsGameOver(array $fleet)
+    {
+        foreach ($fleet as $ship) {
+            if (count($ship->getPositions()) > 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static function initializeShips()

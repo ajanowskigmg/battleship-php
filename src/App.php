@@ -77,12 +77,12 @@ class App
     {
         self::$myFleet = GameController::initializeShips();
 
-        self::$console->println("Please position your fleet (Game board has size from A to H and 1 to 8) :");
+        self::$console->printColoredLn("Please position your fleet (Game board has size from A to H and 1 to 8) :", Color::YELLOW);
 
         foreach (self::$myFleet as $ship) {
 
             self::$console->println();
-            printf("Please enter the positions for the %s (size: %s)", $ship->getName(), $ship->getSize());
+            self::$console->printColoredLn(sprintf("Please enter the positions for the %s (size: %s)", $ship->getName(), $ship->getSize()), Color::YELLOW);
 
             for ($i = 1; $i <= $ship->getSize(); $i++) {
                 printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
@@ -105,6 +105,7 @@ class App
 
     public static function StartGame()
     {
+        self::$console->setForegroundColor(Color::YELLOW);
         self::$console->println("\033[2J\033[;H");
         self::$console->println("                  __");
         self::$console->println("                 /  \\");
@@ -116,15 +117,18 @@ class App
         self::$console->println("  |     /_\'");
         self::$console->println("   \\    \\_/");
         self::$console->println("    \" \"\" \"\" \"\" \"");
+        self::$console->resetForegroundColor();
 
         while (true) {
-            self::$console->println("");
-            self::$console->println("Player, it's your turn");
+            self::groupVisualy("Player turn");
+            self::$console->printColoredLn("Player, it's your turn", Color::YELLOW);
             self::$console->println("Enter coordinates for your shot :");
             $position = readline("");
 
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
+
             if ($isHit) {
+                self::$console->setForegroundColor(Color::RED);
                 self::beep();
                 self::$console->println("                \\         .  ./");
                 self::$console->println("              \\      .:\" \";'.:..\" \"   /");
@@ -134,16 +138,19 @@ class App
                 self::$console->println("            -   (\\- |  \\ /  |  /)  -");
                 self::$console->println("                 -\\  \\     /  /-");
                 self::$console->println("                   \\  \\   /  /");
+                self::$console->println("Yeah ! Nice hit !");
+            } else {
+                self::$console->setForegroundColor(Color::CADET_BLUE);
+                self::$console->println("Miss");
             }
-
-            echo $isHit ? "Yeah ! Nice hit !" : "Miss";
-            self::$console->println();
+            self::$console->resetForegroundColor();
 
             $position = self::getRandomPosition();
             $isHit = GameController::checkIsHit(self::$myFleet, $position);
-            self::$console->println();
-            printf("Computer shoot in %s%s and %s", $position->getColumn(), $position->getRow(), $isHit ? "hit your ship !\n" : "miss");
+            self::groupVisualy("Computer turn");
             if ($isHit) {
+                self::$console->setForegroundColor(Color::RED);
+                self::$console->println(sprintf("Computer shoot in %s%s and hit your ship !", $position->getColumn(), $position->getRow()));
                 self::beep();
 
                 self::$console->println("                \\         .  ./");
@@ -155,12 +162,25 @@ class App
                 self::$console->println("                 -\\  \\     /  /-");
                 self::$console->println("                   \\  \\   /  /");
 
+            } else {
+                self::$console->setForegroundColor(Color::CADET_BLUE);
+                self::$console->println(sprintf("Computer shoot in %s%s and miss", $position->getColumn(), $position->getRow()));
             }
 
-//            exit();
+            self::$console->resetForegroundColor();
         }
     }
 
+    private static function groupVisualy($text = "")
+    {
+        $length = 60 - strlen($text) - 2;
+
+        $length1 = ceil($length / 2);
+        $length2 = $length - $length1;
+        self::$console->println();
+        self::$console->println("//" . str_repeat('-', $length1) . ' ' . $text . ' ' . str_repeat('-', $length2) . "//");
+        self::$console->println();
+    }
     public static function parsePosition($input)
     {
         $letter = substr($input, 0, 1);

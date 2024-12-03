@@ -18,4 +18,12 @@ class Console
     {
         echo "$line\n";
     }
+
+    function printColoredLn($line = "", $color = Battleship\Color::DEFAULT_GREY)
+    {
+        self::setForegroundColor($color);
+        self::println($line);
+        self::resetForegroundColor();
+    }
+
 }

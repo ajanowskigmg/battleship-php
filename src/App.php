@@ -136,6 +136,8 @@ class App
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
             if (GameController::checkIsGameOver(self::$enemyFleet)) {
                 self::$console->printColoredln("You are the winner!", Color::YELLOW);
+                self::$console->println("\nPress any button to quit game...");
+                readline();
                 exit();
             }
 

@@ -22,6 +22,7 @@ class GameController
                 if ($position == $shot) {
                     $index = array_search($position, $ship->getPositions());
                     unset($ship->getPositions()[$index]);
+                    self::checkIfShipSunk($ship, $shot);
 
                     return true;
                 }
@@ -66,5 +67,22 @@ class GameController
         $number = random_int(0, $rows - 1);
 
         return new Position($letter, $number);
+    }
+
+    /**
+     * Sprawdza czy statek zatonął, jeśli zadonął, wypisuje jaki to statek
+     *
+     * @param Ship $ship
+     * @param Position $hitPosition
+     * @return bool
+     */
+    public static function checkIfShipSunk(Ship $ship)
+    {
+        if (count($ship->getPositions()) == 0) {
+            echo "Zatonął statek: " . $ship->getName() . PHP_EOL;
+            return true;
+        }
+
+        return false;
     }
 }

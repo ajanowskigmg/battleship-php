@@ -22,14 +22,15 @@ class GameController
                 if ($position == $shot) {
                     $index = array_search($position, $ship->getPositions());
                     unset($ship->getPositions()[$index]);
-                    self::checkIfShipSunk($ship, $shot);
-
+                    if (self::checkIfShipSunk($ship)) {
+                        self::printAllShips($fleet);
+                    }
                     return true;
                 }
             }
-        }
 
-        return false;
+            return false;
+        }
     }
 
     public static function checkIsGameOver(array $fleet)
@@ -84,5 +85,12 @@ class GameController
         }
 
         return false;
+    }
+
+    public static function printAllShipsCounts(array $fleet)
+    {
+        foreach ($fleet as $ship) {
+            self::$console->printColoredLn($ship->getName() . " Size: " . $ship->getSize() . " Count: " . count($ship->getPositions()), $ship->getColor());
+        }
     }
 }

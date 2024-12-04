@@ -9,6 +9,9 @@ class App
 {
     private static $myFleet = array();
     private static $enemyFleet = array();
+
+    private static $fleetNumber;
+
     private static $console;
 
     static function run()
@@ -35,31 +38,29 @@ class App
         self::StartGame();
     }
 
-    public static function InitializeEnemyFleet()
+    public static function InitializeEnemyFleet(int $fleetNumber)
     {
         self::$enemyFleet = GameController::initializeShips();
 
-        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 4));
-        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 5));
-        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 6));
-        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 7));
-        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 8));
-
-        array_push(self::$enemyFleet[1]->getPositions(), new Position('E', 6));
-        array_push(self::$enemyFleet[1]->getPositions(), new Position('E', 7));
-        array_push(self::$enemyFleet[1]->getPositions(), new Position('E', 8));
-        array_push(self::$enemyFleet[1]->getPositions(), new Position('E', 9));
-
-        array_push(self::$enemyFleet[2]->getPositions(), new Position('A', 3));
-        array_push(self::$enemyFleet[2]->getPositions(), new Position('B', 3));
-        array_push(self::$enemyFleet[2]->getPositions(), new Position('C', 3));
-
-        array_push(self::$enemyFleet[3]->getPositions(), new Position('F', 8));
-        array_push(self::$enemyFleet[3]->getPositions(), new Position('G', 8));
-        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 8));
-
-        array_push(self::$enemyFleet[4]->getPositions(), new Position('C', 5));
-        array_push(self::$enemyFleet[4]->getPositions(), new Position('C', 6));
+        switch ($fleetNumber) {
+            case 1:
+                self::initializeFleet1();
+                break;
+            case 2:
+                self::initializeFleet2();
+                break;
+            case 3:
+                self::initializeFleet3();
+                break;
+            case 4:
+                self::initializeFleet4();
+                break;
+            case 5:
+                self::initializeFleet5();
+                break;
+            default:
+                throw new Exception("Invalid fleet number");
+        }
     }
 
     public static function getRandomPosition()
@@ -99,8 +100,10 @@ class App
 
     public static function InitializeGame()
     {
+        self::$fleetNumber = random_int(1, 5);
+
         self::InitializeMyFleet();
-        self::InitializeEnemyFleet();
+        self::InitializeEnemyFleet(self::$fleetNumber);
     }
 
     public static function StartGame()
@@ -126,8 +129,7 @@ class App
             $position = readline("");
 
             if (strtolower(trim($position)) === "map#") {
-                // TODO: podpiąć wyświetlanie planszy
-                self::$console->printColoredln("[TU MA SIĘ WYŚWIETLIĆ MAPA]", Color::YELLOW);
+                self::$console->printColoredln("MAP: " . self::$fleetNumber, Color::YELLOW);
                 continue;
             }
 
@@ -206,5 +208,134 @@ class App
         }
 
         return new Position($letter, $number);
+    }
+
+    private static function initializeFleet1()
+    {
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('A', 1));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('A', 2));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('A', 3));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('A', 4));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('A', 5));
+
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('C', 3));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('C', 4));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('C', 5));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('C', 6));
+
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('E', 1));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('F', 1));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('G', 1));
+
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 4));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 5));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 6));
+
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 8));
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('G', 8));
+    }
+
+    private static function initializeFleet2()
+    {
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 2));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 3));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 4));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 5));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('B', 6));
+
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('D', 7));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('E', 7));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('F', 7));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('G', 7));
+
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('A', 8));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('B', 8));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('C', 8));
+
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 3));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 4));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 5));
+
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 2));
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 3));
+
+    }
+
+    private static function initializeFleet3()
+    {
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('C', 1));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('D', 1));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('E', 1));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('F', 1));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('G', 1));
+
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('A', 4));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('B', 4));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('C', 4));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('D', 4));
+
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('F', 5));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('F', 6));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('F', 7));
+
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 6));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 7));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('H', 8));
+
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('B', 7));
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('C', 7));
+
+
+    }
+
+    private static function initializeFleet4()
+    {
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('D', 3));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('D', 4));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('D', 5));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('D', 6));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('D', 7));
+
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('F', 2));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('F', 3));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('F', 4));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('F', 5));
+
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('B', 8));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('C', 8));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('D', 8));
+
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('A', 6));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('A', 7));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('A', 8));
+
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('H', 1));
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('H', 2));
+
+    }
+
+    private static function initializeFleet5()
+    {
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('G', 4));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('G', 5));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('G', 6));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('G', 7));
+        array_push(self::$enemyFleet[0]->getPositions(), new Position('G', 8));
+
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('B', 2));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('C', 2));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('D', 2));
+        array_push(self::$enemyFleet[1]->getPositions(), new Position('E', 2));
+
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('A', 1));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('A', 2));
+        array_push(self::$enemyFleet[2]->getPositions(), new Position('A', 3));
+
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('C', 7));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('C', 8));
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('D', 8));
+
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 5));
+        array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 6));
     }
 }

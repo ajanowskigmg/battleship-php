@@ -9,6 +9,9 @@ class App
 {
     private static $myFleet = array();
     private static $enemyFleet = array();
+
+    private static $fleetNumber;
+
     private static $console;
 
     static function run()
@@ -97,10 +100,10 @@ class App
 
     public static function InitializeGame()
     {
-        $fleetNumber = random_int(1, 5);
+        self::$fleetNumber = random_int(1, 5);
 
         self::InitializeMyFleet();
-        self::InitializeEnemyFleet($fleetNumber);
+        self::InitializeEnemyFleet(self::$fleetNumber);
     }
 
     public static function StartGame()

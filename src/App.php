@@ -126,7 +126,7 @@ class App
             $position = readline("");
 
             if (strtolower(trim($position)) === "help") {
-
+                // TODO: podpiąć wyświetlanie planszy
                 self::$console->println("[TU MA SIĘ WYŚWIETLIĆ MAPA]");
                 continue;
             }

@@ -79,7 +79,7 @@ class GameController
     public static function checkIfShipSunk(Ship $ship)
     {
         if (count($ship->getPositions()) == 0) {
-            echo "Zatonął statek: " . $ship->getName() . PHP_EOL;
+            self::$console->printColoredLn("Ship destroyed :" . $ship->getName() . " Size: " . $ship->getSize() , Color::YELLOW);
             return true;
         }
 

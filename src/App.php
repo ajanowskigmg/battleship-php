@@ -129,8 +129,7 @@ class App
             $position = readline("");
 
             if (strtolower(trim($position)) === "map#") {
-                // TODO: podpiąć wyświetlanie planszy
-                self::$console->printColoredln("[TU MA SIĘ WYŚWIETLIĆ MAPA]", Color::YELLOW);
+                self::$console->printColoredln("MAP: " . self::$fleetNumber, Color::YELLOW);
                 continue;
             }
 

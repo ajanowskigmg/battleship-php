@@ -125,7 +125,7 @@ class App
             self::$console->println("Enter coordinates for your shot :");
             $position = readline("");
 
-            if (strtolower(trim($position)) === "help") {
+            if (strtolower(trim($position)) === "map#") {
                 // TODO: podpiąć wyświetlanie planszy
                 self::$console->println("[TU MA SIĘ WYŚWIETLIĆ MAPA]");
                 continue;

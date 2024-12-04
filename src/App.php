@@ -127,7 +127,7 @@ class App
 
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
             if (GameController::checkIsGameOver(self::$enemyFleet)) {
-                self::$console->println("You are the winner!");
+                self::$console->printColoredln("You are the winner!", Color::YELLOW);
                 exit();
             }
 
@@ -144,8 +144,7 @@ class App
                 self::$console->println("                   \\  \\   /  /");
                 self::$console->println("Yeah ! Nice hit !");
             } else {
-                self::$console->setForegroundColor(Color::CADET_BLUE);
-                self::$console->println("Miss");
+                self::$console->setForegroundColor(Color::DARK_CYAN);
             }
             self::$console->resetForegroundColor();
 
@@ -173,7 +172,7 @@ class App
                 self::$console->println("                   \\  \\   /  /");
 
             } else {
-                self::$console->setForegroundColor(Color::CADET_BLUE);
+                self::$console->setForegroundColor(Color::DARK_CYAN);
                 self::$console->println(sprintf("Computer shoot in %s%s and miss", $position->getColumn(), $position->getRow()));
             }
 
@@ -183,12 +182,12 @@ class App
 
     private static function groupVisualy($text = "")
     {
-        $length = 60 - strlen($text) - 2;
+        $length = 70 - strlen($text) - 2;
 
         $length1 = ceil($length / 2);
         $length2 = $length - $length1;
         self::$console->println();
-        self::$console->println("//" . str_repeat('-', $length1) . ' ' . $text . ' ' . str_repeat('-', $length2) . "//");
+        self::$console->println(str_repeat('-', $length1) . ' ' . $text . ' ' . str_repeat('-', $length2));
         self::$console->println();
     }
     public static function parsePosition($input)

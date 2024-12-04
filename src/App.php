@@ -136,7 +136,7 @@ class App
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
             if (GameController::checkIsGameOver(self::$enemyFleet)) {
                 self::$console->printColoredln("You are the winner!", Color::YELLOW);
-                self::$console->println("\nPress any button to quit game...");
+                self::$console->println("\nPress Enter to quit game...");
                 readline();
                 exit();
             }
@@ -167,7 +167,7 @@ class App
             if ($isHit) {
                 if (GameController::checkIsGameOver(self::$enemyFleet)) {
                     self::$console->println("You lost");
-                    self::$console->println("\nPress any button to quit game...");
+                    self::$console->println("\nPress Enter to quit game...");
                     readline();
                     exit();
                 }

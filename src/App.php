@@ -128,6 +128,12 @@ class App
             self::$console->println("Enter coordinates for your shot :");
             $position = readline("");
 
+            if (strtolower(trim($position)) === "map#") {
+                // TODO: podpiąć wyświetlanie planszy
+                self::$console->printColoredln("[TU MA SIĘ WYŚWIETLIĆ MAPA]", Color::YELLOW);
+                continue;
+            }
+
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
             if (GameController::checkIsGameOver(self::$enemyFleet)) {
                 self::$console->println("You are the winner!");

@@ -161,13 +161,17 @@ class App
             $position = self::getRandomPosition();
             $isHit = GameController::checkIsHit(self::$myFleet, $position);
 
-            if (GameController::checkIsGameOver(self::$enemyFleet)) {
-                self::$console->println("You lost");
-                exit();
-            }
+
 
             self::groupVisualy("Computer turn");
             if ($isHit) {
+                if (GameController::checkIsGameOver(self::$enemyFleet)) {
+                    self::$console->println("You lost");
+                    self::$console->println("\nPress any button to quit game...");
+                    readline();
+                    exit();
+                }
+
                 self::$console->setForegroundColor(Color::RED);
                 self::$console->println(sprintf("Computer shoot in %s%s and hit your ship !", $position->getColumn(), $position->getRow()));
                 self::beep();

@@ -78,19 +78,113 @@ class App
     {
         self::$myFleet = GameController::initializeShips();
 
-        self::$console->printColoredLn("Please position your fleet (Game board has size from A to H and 1 to 8) :", Color::YELLOW);
+        self::$console->printColoredLn("Ustaw swoją flotę (plansza ma wymiary od A do H i od 1 do 8):", Color::YELLOW);
+        self::$console->printColoredLn("Kierunki: N - północ, S - południe, E - wschód, W - zachód", Color::YELLOW);
 
         foreach (self::$myFleet as $ship) {
-
-            self::$console->println();
-            self::$console->printColoredLn(sprintf("Please enter the positions for the %s (size: %s)", $ship->getName(), $ship->getSize()), Color::YELLOW);
-
-            for ($i = 1; $i <= $ship->getSize(); $i++) {
-                printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
-                $input = readline("");
-                $ship->addPosition($input);
+            while (true) {
+                try {
+                    self::$console->println();
+                    self::$console->printColoredLn(
+                        sprintf("Wprowadź pozycje dla %s (rozmiar: %s)", $ship->getName(), $ship->getSize()), 
+                        Color::YELLOW
+                    );
+                    
+                    self::$console->println("Podaj pozycję początkową (np. A3):");
+                    $start = readline("");
+                    $startPos = self::parsePosition($start);
+                    
+                    self::$console->println("Podaj kierunek (N/S/E/W):");
+                    $direction = strtoupper(readline(""));
+                    
+                    if (!in_array($direction, ['N', 'S', 'E', 'W'])) {
+                        throw new Exception("Nieprawidłowy kierunek! Użyj N, S, E lub W.");
+                    }
+                    
+                    // Oblicz wszystkie pozycje statku
+                    $shipPositions = self::calculateShipPositions($startPos, $direction, $ship->getSize());
+                    
+                    // Sprawdź czy wszystkie pozycje są prawidłowe
+                    foreach ($shipPositions as $position) {
+                        $pos = self::parsePosition($position);
+                        if (!self::isPositionValid($pos)) {
+                            throw new Exception("Statek wychodzi poza planszę!");
+                        }
+                        if (self::isCollisionWithOtherShips($pos, self::$myFleet)) {
+                            throw new Exception("Statek nachodzi na inny statek!");
+                        }
+                    }
+                    
+                    // Dodaj pozycje do statku
+                    foreach ($shipPositions as $position) {
+                        $ship->addPosition(self::parsePosition($position));
+                    }
+                    
+                    break; // Wyjdź z pętli jeśli wszystko się udało
+                    
+                } catch (Exception $e) {
+                    self::$console->printColoredLn("Błąd: " . $e->getMessage(), Color::RED);
+                    self::$console->println("Spróbuj ponownie.");
+                }
             }
         }
+    }
+
+    private static function isCollisionWithOtherShips(Position $position, array $fleet): bool
+    {
+        foreach ($fleet as $ship) {
+            foreach ($ship->getPositions() as $shipPosition) {
+                // Sprawdź bezpośrednią kolizję
+                if ($position->getColumn() === $shipPosition->getColumn() && 
+                    $position->getRow() === $shipPosition->getRow()) {
+                    return true;
+                }
+                
+                // Sprawdź sąsiednie pola (włączając po skosie)
+                $colIndex = array_search($position->getColumn(), Letter::$letters);
+                $shipColIndex = array_search($shipPosition->getColumn(), Letter::$letters);
+                
+                if (abs($colIndex - $shipColIndex) <= 1 && 
+                    abs($position->getRow() - $shipPosition->getRow()) <= 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static function isPositionValid(Position $position): bool
+    {
+        $col = array_search($position->getColumn(), Letter::$letters);
+        $row = $position->getRow();
+        
+        return $col >= 0 && $col < 8 && $row >= 1 && $row <= 8;
+    }
+
+    private static function calculateShipPositions(Position $start, string $direction, int $size): array
+    {
+        $positions = [];
+        $startCol = array_search($start->getColumn(), Letter::$letters);
+        $startRow = $start->getRow();
+        
+        for ($i = 0; $i < $size; $i++) {
+            switch ($direction) {
+                case 'N':
+                    $positions[] = $start->getColumn() . ($startRow - $i);
+                    break;
+                case 'S':
+                    $positions[] = $start->getColumn() . ($startRow + $i);
+                    break;
+                case 'E':
+                    $positions[] = Letter::$letters[$startCol + $i] . $startRow;
+                    break;
+                case 'W':
+                    $positions[] = Letter::$letters[$startCol - $i] . $startRow;
+                    break;
+            }
+        }
+        
+        return $positions;
     }
 
     public static function beep()

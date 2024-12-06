@@ -62,16 +62,23 @@ class App
                 throw new Exception("Invalid fleet number");
         }
     }
-
+    private static $shots = [];
     public static function getRandomPosition()
     {
         $rows = 8;
         $lines = 8;
 
-        $letter = Letter::value(random_int(0, $lines - 1));
-        $number = random_int(0, $rows - 1);
+        // Generowanie losowej pozycji
+        do {
+            $letter = Letter::value(random_int(0, $lines - 1));
+            $number = random_int(0, $rows - 1);
+            $position = new Position($letter, $number);
+        } while (in_array($position, self::$shots));
 
-        return new Position($letter, $number);
+        // Dodajemy nową pozycję do tablicy strzałów
+        self::$shots[] = $position;
+
+        return $position;
     }
 
     public static function InitializeMyFleet()

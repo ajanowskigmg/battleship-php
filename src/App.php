@@ -150,14 +150,6 @@ class App
                     return true;
                 }
                 
-                // Sprawdź sąsiednie pola (włączając po skosie)
-                $colIndex = array_search($position->getColumn(), Letter::$letters);
-                $shipColIndex = array_search($shipPosition->getColumn(), Letter::$letters);
-                
-                if (abs($colIndex - $shipColIndex) <= 1 && 
-                    abs($position->getRow() - $shipPosition->getRow()) <= 1) {
-                    return true;
-                }
             }
         }
         return false;

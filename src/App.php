@@ -84,23 +84,24 @@ class App
         foreach (self::$myFleet as $ship) {
             while (true) {
                 try {
+                    self::drawMap(self::$myFleet);
                     self::$console->println();
                     self::$console->printColoredLn(
-                        sprintf("Enter positions for %s (size: %s)", $ship->getName(), $ship->getSize()), 
+                        sprintf("Enter positions for %s (size: %s)", $ship->getName(), $ship->getSize()),
                         Color::YELLOW
                     );
-                    
+
                     self::$console->println("Enter starting position (e.g. A3):");
                     $start = readline("");
                     $startPos = self::parsePosition($start);
-                    
+
                     self::$console->println("Enter direction (R/D):");
                     $direction = strtoupper(readline(""));
-                    
+
                     if (!in_array($direction, ['R', 'D'])) {
                         throw new Exception("Invalid direction! Use R (Right) or D (Down).");
                     }
-                    
+
                     // Early validation for ship bounds
                     if ($direction === 'R') {
                         $endColIndex = array_search($startPos->getColumn(), Letter::$letters) + ($ship->getSize() - 1);
@@ -113,10 +114,10 @@ class App
                             throw new Exception("Ship cannot be placed here - it would go off the board downwards!");
                         }
                     }
-                    
+
                     // Calculate all ship positions
                     $shipPositions = self::calculateShipPositions($startPos, $direction, $ship->getSize());
-                    
+
                     // Validate collisions with other ships
                     foreach ($shipPositions as $position) {
                         $pos = self::parsePosition($position);
@@ -124,14 +125,14 @@ class App
                             throw new Exception("Ships cannot be placed adjacent to each other!");
                         }
                     }
-                    
+
                     // Add positions to ship
                     foreach ($shipPositions as $position) {
                         $ship->addPosition(self::parsePosition($position));
                     }
-                    
+
                     break; // Exit loop if successful
-                    
+
                 } catch (Exception $e) {
                     self::$console->printColoredLn("Error: " . $e->getMessage(), Color::RED);
                     self::$console->println("Please try again.");
@@ -145,11 +146,11 @@ class App
         foreach ($fleet as $ship) {
             foreach ($ship->getPositions() as $shipPosition) {
                 // Sprawdź bezpośrednią kolizję
-                if ($position->getColumn() === $shipPosition->getColumn() && 
+                if ($position->getColumn() === $shipPosition->getColumn() &&
                     $position->getRow() === $shipPosition->getRow()) {
                     return true;
                 }
-                
+
             }
         }
         return false;
@@ -159,7 +160,7 @@ class App
     {
         $col = array_search($position->getColumn(), Letter::$letters);
         $row = $position->getRow();
-        
+
         return $col >= 0 && $col < 8 && $row >= 1 && $row <= 8;
     }
 
@@ -168,7 +169,7 @@ class App
         $positions = [];
         $startCol = array_search($start->getColumn(), Letter::$letters);
         $startRow = $start->getRow();
-        
+
         for ($i = 0; $i < $size; $i++) {
             switch ($direction) {
                 case 'D':
@@ -179,7 +180,7 @@ class App
                     break;
             }
         }
-        
+
         return $positions;
     }
 
@@ -220,6 +221,10 @@ class App
 
             if (strtolower(trim($position)) === "map#") {
                 self::$console->printColoredln("MAP: " . self::$fleetNumber, Color::YELLOW);
+                echo "My fleet: \n";
+                self::drawMap(self::$myFleet);
+                echo "Enemy fleet: \n";
+                self::drawMap(self::$enemyFleet);
                 continue;
             }
 
@@ -248,20 +253,17 @@ class App
             }
             self::$console->resetForegroundColor();
 
+            if (GameController::checkIsGameOver(self::$enemyFleet)) {
+                self::$console->println("You are the winner!");
+                exit();
+            }
+
+
             $position = self::getRandomPosition();
             $isHit = GameController::checkIsHit(self::$myFleet, $position);
 
-
-
             self::groupVisualy("Computer turn");
             if ($isHit) {
-                if (GameController::checkIsGameOver(self::$enemyFleet)) {
-                    self::$console->println("You lost");
-                    self::$console->println("\nPress Enter to quit game...");
-                    readline();
-                    exit();
-                }
-
                 self::$console->setForegroundColor(Color::RED);
                 self::$console->println(sprintf("Computer shoot in %s%s and hit your ship !", $position->getColumn(), $position->getRow()));
                 self::beep();
@@ -278,6 +280,12 @@ class App
             } else {
                 self::$console->setForegroundColor(Color::DARK_CYAN);
                 self::$console->println(sprintf("Computer shoot in %s%s and miss", $position->getColumn(), $position->getRow()));
+            }
+
+            if (GameController::checkIsGameOver(self::$myFleet)) {
+                self::$console->println("You lost");
+                self::$console->println("\nPress Enter to quit game...");
+                exit();
             }
 
             self::$console->resetForegroundColor();
@@ -433,5 +441,66 @@ class App
 
         array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 5));
         array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 6));
+    }
+
+    private static function drawMap($fleet)
+    {
+        $rows = 8;
+        $lines = 8;
+
+        self::$console->printColoredLn("   A B C D E F G H", Color::YELLOW);
+        self::$console->printColoredLn("  +----------------+", Color::YELLOW);
+
+        for ($i = 1; $i <= $rows; $i++) {
+            $line = $i . " |";
+            for ($j = 1; $j <= $lines; $j++) {
+                $position = new Position(Letter::value($j - 1), $i);
+                $isShip = false;
+                foreach ($fleet as $ship) {
+                    if (in_array($position, $ship->getPositions())) {
+                        $isShip = true;
+                        break;
+                    }
+                }
+                $line .= $isShip ? "X" : " ";
+                $line .= " ";
+            }
+            $line .= "|";
+            self::$console->printColoredLn($line, Color::YELLOW);
+        }
+
+        self::$console->printColoredLn("  +----------------+", Color::YELLOW);
+    }
+
+    /**
+     *
+     */
+    private static function drawImpresiveMap($fleet)
+    {
+        $rows = 8;
+        $lines = 8;
+
+        self::$console->printColoredLn("   A B C D E F G H", Color::YELLOW);
+        self::$console->printColoredLn("  +----------------+", Color::YELLOW);
+
+        for ($i = 1; $i <= $rows; $i++) {
+            $line = $i . " |";
+            for ($j = 1; $j <= $lines; $j++) {
+                $position = new Position(Letter::value($j - 1), $i);
+                $isShip = false;
+                foreach ($fleet as $ship) {
+                    if (in_array($position, $ship->getPositions())) {
+                        $isShip = true;
+                        break;
+                    }
+                }
+                $line .= $isShip ? "X" : " ";
+                $line .= " ";
+            }
+            $line .= "|";
+            self::$console->printColoredLn($line, Color::YELLOW);
+        }
+
+        self::$console->printColoredLn("  +----------------+", Color::YELLOW);
     }
 }

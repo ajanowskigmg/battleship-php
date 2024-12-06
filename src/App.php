@@ -79,7 +79,7 @@ class App
         self::$myFleet = GameController::initializeShips();
 
         self::$console->printColoredLn("Set up your fleet (board size is from A to H and 1 to 8):", Color::YELLOW);
-        self::$console->printColoredLn("Directions: U - Up, D - Down, L - Left, R - Right", Color::YELLOW);
+        self::$console->printColoredLn("Directions: R - Right, D - Down", Color::YELLOW);
 
         foreach (self::$myFleet as $ship) {
             while (true) {
@@ -94,22 +94,32 @@ class App
                     $start = readline("");
                     $startPos = self::parsePosition($start);
                     
-                    self::$console->println("Enter direction (U/D/L/R):");
+                    self::$console->println("Enter direction (R/D):");
                     $direction = strtoupper(readline(""));
                     
-                    if (!in_array($direction, ['U', 'D', 'L', 'R'])) {
-                        throw new Exception("Invalid direction! Use U (Up), D (Down), L (Left) or R (Right).");
+                    if (!in_array($direction, ['R', 'D'])) {
+                        throw new Exception("Invalid direction! Use R (Right) or D (Down).");
+                    }
+                    
+                    // Early validation for ship bounds
+                    if ($direction === 'R') {
+                        $endColIndex = array_search($startPos->getColumn(), Letter::$letters) + ($ship->getSize() - 1);
+                        if ($endColIndex >= count(Letter::$letters)) {
+                            throw new Exception("Ship cannot be placed here - it would go off the board to the right!");
+                        }
+                    } else { // direction is 'D'
+                        $endRow = $startPos->getRow() + ($ship->getSize() - 1);
+                        if ($endRow > 8) {
+                            throw new Exception("Ship cannot be placed here - it would go off the board downwards!");
+                        }
                     }
                     
                     // Calculate all ship positions
                     $shipPositions = self::calculateShipPositions($startPos, $direction, $ship->getSize());
                     
-                    // Validate all positions
+                    // Validate collisions with other ships
                     foreach ($shipPositions as $position) {
                         $pos = self::parsePosition($position);
-                        if (!self::isPositionValid($pos)) {
-                            throw new Exception("Ship position is out of bounds!");
-                        }
                         if (self::isCollisionWithOtherShips($pos, self::$myFleet)) {
                             throw new Exception("Ships cannot be placed adjacent to each other!");
                         }
@@ -169,17 +179,11 @@ class App
         
         for ($i = 0; $i < $size; $i++) {
             switch ($direction) {
-                case 'U':
-                    $positions[] = $start->getColumn() . ($startRow - $i);
-                    break;
                 case 'D':
                     $positions[] = $start->getColumn() . ($startRow + $i);
                     break;
                 case 'R':
                     $positions[] = Letter::$letters[$startCol + $i] . $startRow;
-                    break;
-                case 'L':
-                    $positions[] = Letter::$letters[$startCol - $i] . $startRow;
                     break;
             }
         }

@@ -160,7 +160,7 @@ class App
             $position = self::getRandomPosition();
             $isHit = GameController::checkIsHit(self::$myFleet, $position);
 
-            if (GameController::checkIsGameOver(self::$enemyFleet)) {
+            if (GameController::checkIsGameOver(self::$myFleet)) {
                 self::$console->println("You lost");
                 exit();
             }

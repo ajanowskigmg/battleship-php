@@ -78,19 +78,109 @@ class App
     {
         self::$myFleet = GameController::initializeShips();
 
-        self::$console->printColoredLn("Please position your fleet (Game board has size from A to H and 1 to 8) :", Color::YELLOW);
+        self::$console->printColoredLn("Set up your fleet (board size is from A to H and 1 to 8):", Color::YELLOW);
+        self::$console->printColoredLn("Directions: R - Right, D - Down", Color::YELLOW);
 
         foreach (self::$myFleet as $ship) {
-
-            self::$console->println();
-            self::$console->printColoredLn(sprintf("Please enter the positions for the %s (size: %s)", $ship->getName(), $ship->getSize()), Color::YELLOW);
-
-            for ($i = 1; $i <= $ship->getSize(); $i++) {
-                printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
-                $input = readline("");
-                $ship->addPosition($input);
+            while (true) {
+                try {
+                    self::$console->println();
+                    self::$console->printColoredLn(
+                        sprintf("Enter positions for %s (size: %s)", $ship->getName(), $ship->getSize()), 
+                        Color::YELLOW
+                    );
+                    
+                    self::$console->println("Enter starting position (e.g. A3):");
+                    $start = readline("");
+                    $startPos = self::parsePosition($start);
+                    
+                    self::$console->println("Enter direction (R/D):");
+                    $direction = strtoupper(readline(""));
+                    
+                    if (!in_array($direction, ['R', 'D'])) {
+                        throw new Exception("Invalid direction! Use R (Right) or D (Down).");
+                    }
+                    
+                    // Early validation for ship bounds
+                    if ($direction === 'R') {
+                        $endColIndex = array_search($startPos->getColumn(), Letter::$letters) + ($ship->getSize() - 1);
+                        if ($endColIndex >= count(Letter::$letters)) {
+                            throw new Exception("Ship cannot be placed here - it would go off the board to the right!");
+                        }
+                    } else { // direction is 'D'
+                        $endRow = $startPos->getRow() + ($ship->getSize() - 1);
+                        if ($endRow > 8) {
+                            throw new Exception("Ship cannot be placed here - it would go off the board downwards!");
+                        }
+                    }
+                    
+                    // Calculate all ship positions
+                    $shipPositions = self::calculateShipPositions($startPos, $direction, $ship->getSize());
+                    
+                    // Validate collisions with other ships
+                    foreach ($shipPositions as $position) {
+                        $pos = self::parsePosition($position);
+                        if (self::isCollisionWithOtherShips($pos, self::$myFleet)) {
+                            throw new Exception("Ships cannot be placed adjacent to each other!");
+                        }
+                    }
+                    
+                    // Add positions to ship
+                    foreach ($shipPositions as $position) {
+                        $ship->addPosition(self::parsePosition($position));
+                    }
+                    
+                    break; // Exit loop if successful
+                    
+                } catch (Exception $e) {
+                    self::$console->printColoredLn("Error: " . $e->getMessage(), Color::RED);
+                    self::$console->println("Please try again.");
+                }
             }
         }
+    }
+
+    private static function isCollisionWithOtherShips(Position $position, array $fleet): bool
+    {
+        foreach ($fleet as $ship) {
+            foreach ($ship->getPositions() as $shipPosition) {
+                // Sprawdź bezpośrednią kolizję
+                if ($position->getColumn() === $shipPosition->getColumn() && 
+                    $position->getRow() === $shipPosition->getRow()) {
+                    return true;
+                }
+                
+            }
+        }
+        return false;
+    }
+
+    private static function isPositionValid(Position $position): bool
+    {
+        $col = array_search($position->getColumn(), Letter::$letters);
+        $row = $position->getRow();
+        
+        return $col >= 0 && $col < 8 && $row >= 1 && $row <= 8;
+    }
+
+    private static function calculateShipPositions(Position $start, string $direction, int $size): array
+    {
+        $positions = [];
+        $startCol = array_search($start->getColumn(), Letter::$letters);
+        $startRow = $start->getRow();
+        
+        for ($i = 0; $i < $size; $i++) {
+            switch ($direction) {
+                case 'D':
+                    $positions[] = $start->getColumn() . ($startRow + $i);
+                    break;
+                case 'R':
+                    $positions[] = Letter::$letters[$startCol + $i] . $startRow;
+                    break;
+            }
+        }
+        
+        return $positions;
     }
 
     public static function beep()

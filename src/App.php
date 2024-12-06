@@ -121,8 +121,9 @@ class App
                     // Validate collisions with other ships
                     foreach ($shipPositions as $position) {
                         $pos = self::parsePosition($position);
+
                         if (self::isCollisionWithOtherShips($pos, self::$myFleet)) {
-                            throw new Exception("Ships cannot be placed adjacent to each other!");
+                            throw new Exception("Ships cannot overlap each other!");
                         }
                     }
 
@@ -435,9 +436,9 @@ class App
         array_push(self::$enemyFleet[2]->getPositions(), new Position('A', 2));
         array_push(self::$enemyFleet[2]->getPositions(), new Position('A', 3));
 
+        array_push(self::$enemyFleet[3]->getPositions(), new Position('C', 6));
         array_push(self::$enemyFleet[3]->getPositions(), new Position('C', 7));
         array_push(self::$enemyFleet[3]->getPositions(), new Position('C', 8));
-        array_push(self::$enemyFleet[3]->getPositions(), new Position('D', 8));
 
         array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 5));
         array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 6));

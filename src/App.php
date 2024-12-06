@@ -79,7 +79,7 @@ class App
         self::$myFleet = GameController::initializeShips();
 
         self::$console->printColoredLn("Set up your fleet (board size is from A to H and 1 to 8):", Color::YELLOW);
-        self::$console->printColoredLn("Directions: N - North, S - South, E - East, W - West", Color::YELLOW);
+        self::$console->printColoredLn("Directions: U - Up, D - Down, L - Left, R - Right", Color::YELLOW);
 
         foreach (self::$myFleet as $ship) {
             while (true) {
@@ -94,11 +94,11 @@ class App
                     $start = readline("");
                     $startPos = self::parsePosition($start);
                     
-                    self::$console->println("Enter direction (N/S/E/W):");
+                    self::$console->println("Enter direction (U/D/L/R):");
                     $direction = strtoupper(readline(""));
                     
-                    if (!in_array($direction, ['N', 'S', 'E', 'W'])) {
-                        throw new Exception("Invalid direction! Use N, S, E or W.");
+                    if (!in_array($direction, ['U', 'D', 'L', 'R'])) {
+                        throw new Exception("Invalid direction! Use U (Up), D (Down), L (Left) or R (Right).");
                     }
                     
                     // Calculate all ship positions
@@ -134,13 +134,13 @@ class App
     {
         foreach ($fleet as $ship) {
             foreach ($ship->getPositions() as $shipPosition) {
-                // Check direct collision
+                // Sprawdź bezpośrednią kolizję
                 if ($position->getColumn() === $shipPosition->getColumn() && 
                     $position->getRow() === $shipPosition->getRow()) {
                     return true;
                 }
                 
-                // Check adjacent positions (including diagonals)
+                // Sprawdź sąsiednie pola (włączając po skosie)
                 $colIndex = array_search($position->getColumn(), Letter::$letters);
                 $shipColIndex = array_search($shipPosition->getColumn(), Letter::$letters);
                 
@@ -169,16 +169,16 @@ class App
         
         for ($i = 0; $i < $size; $i++) {
             switch ($direction) {
-                case 'N':
+                case 'U':
                     $positions[] = $start->getColumn() . ($startRow - $i);
                     break;
-                case 'S':
+                case 'D':
                     $positions[] = $start->getColumn() . ($startRow + $i);
                     break;
-                case 'E':
+                case 'R':
                     $positions[] = Letter::$letters[$startCol + $i] . $startRow;
                     break;
-                case 'W':
+                case 'L':
                     $positions[] = Letter::$letters[$startCol - $i] . $startRow;
                     break;
             }

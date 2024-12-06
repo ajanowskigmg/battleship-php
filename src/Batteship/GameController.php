@@ -23,6 +23,7 @@ class GameController
                     $index = array_search($position, $ship->getPositions());
                     unset($ship->getPositions()[$index]);
                     if (self::checkIfShipSunk($ship)) {
+                        self::printInfoShipSunk($ship);
                         self::printAllShipsCounts($fleet);
                     }
                     return true;
@@ -80,8 +81,6 @@ class GameController
     public static function checkIfShipSunk(Ship $ship)
     {
         if (count($ship->getPositions()) == 0) {
-            echo "Ship destroyed :" . $ship->getName() . " Size: " . $ship->getSize() . "\n";
-
             return true;
         }
 
@@ -91,7 +90,25 @@ class GameController
     public static function printAllShipsCounts(array $fleet)
     {
         foreach ($fleet as $ship) {
-            echo $ship->getName() . " Size: " . $ship->getSize() . " Count: " . count($ship->getPositions()) . "\n";
+            echo $ship->getName() . " Active positions: " . count($ship->getPositions()) . "/" .  $ship->getSize() . "\n";
         }
+    }
+
+    private static function printInfoShipSunk(Ship $ship)
+    {
+        echo "\033[31m";
+
+        echo "SHIP DESTROYED: " . $ship->getName() . " Size: " . $ship->getSize() . "\n";
+        echo "             |    |    |               \n";
+        echo "            )_)  )_)  )_)              \n";
+        echo "           )___))___))___)\\           \n";
+        echo "          )____)____)_____)\\\\         \n";
+        echo "        _____|____|____|____\\\\__      \n";
+        echo "--------\\                   /-------- \n";
+        echo "  ~~~~~~^~~~~~~~~~~~~~~~~~~~^~~~~~~~  \n";
+        echo "     ~~~^~                         ~~~\n";
+        echo "       RIP " . $ship->getName() . "         \n";
+
+        echo "\033[0m";
     }
 }

@@ -130,14 +130,14 @@ class App
 
             if (strtolower(trim($position)) === "map#") {
                 self::$console->printColoredln("MAP: " . self::$fleetNumber, Color::YELLOW);
+                echo "My fleet: \n";
+                self::drawMap(self::$myFleet);
+                echo "Enemy fleet: \n";
+                self::drawMap(self::$enemyFleet);
                 continue;
             }
 
             $isHit = GameController::checkIsHit(self::$enemyFleet, self::parsePosition($position));
-            if (GameController::checkIsGameOver(self::$enemyFleet)) {
-                self::$console->println("You are the winner!");
-                exit();
-            }
 
             if ($isHit) {
                 self::$console->setForegroundColor(Color::RED);
@@ -157,13 +157,14 @@ class App
             }
             self::$console->resetForegroundColor();
 
-            $position = self::getRandomPosition();
-            $isHit = GameController::checkIsHit(self::$myFleet, $position);
-
-            if (GameController::checkIsGameOver(self::$myFleet)) {
-                self::$console->println("You lost");
+            if (GameController::checkIsGameOver(self::$enemyFleet)) {
+                self::$console->println("You are the winner!");
                 exit();
             }
+
+
+            $position = self::getRandomPosition();
+            $isHit = GameController::checkIsHit(self::$myFleet, $position);
 
             self::groupVisualy("Computer turn");
             if ($isHit) {
@@ -183,6 +184,11 @@ class App
             } else {
                 self::$console->setForegroundColor(Color::CADET_BLUE);
                 self::$console->println(sprintf("Computer shoot in %s%s and miss", $position->getColumn(), $position->getRow()));
+            }
+
+            if (GameController::checkIsGameOver(self::$myFleet)) {
+                self::$console->println("You lost");
+                exit();
             }
 
             self::$console->resetForegroundColor();
@@ -338,5 +344,66 @@ class App
 
         array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 5));
         array_push(self::$enemyFleet[4]->getPositions(), new Position('F', 6));
+    }
+
+    private static function drawMap($fleet)
+    {
+        $rows = 8;
+        $lines = 8;
+
+        self::$console->printColoredLn("   A B C D E F G H", Color::YELLOW);
+        self::$console->printColoredLn("  +----------------+", Color::YELLOW);
+
+        for ($i = 1; $i <= $rows; $i++) {
+            $line = $i . " |";
+            for ($j = 1; $j <= $lines; $j++) {
+                $position = new Position(Letter::value($j - 1), $i);
+                $isShip = false;
+                foreach ($fleet as $ship) {
+                    if (in_array($position, $ship->getPositions())) {
+                        $isShip = true;
+                        break;
+                    }
+                }
+                $line .= $isShip ? "X" : " ";
+                $line .= " ";
+            }
+            $line .= "|";
+            self::$console->printColoredLn($line, Color::YELLOW);
+        }
+
+        self::$console->printColoredLn("  +----------------+", Color::YELLOW);
+    }
+
+    /**
+     *
+     */
+    private static function drawImpresiveMap($fleet)
+    {
+        $rows = 8;
+        $lines = 8;
+
+        self::$console->printColoredLn("   A B C D E F G H", Color::YELLOW);
+        self::$console->printColoredLn("  +----------------+", Color::YELLOW);
+
+        for ($i = 1; $i <= $rows; $i++) {
+            $line = $i . " |";
+            for ($j = 1; $j <= $lines; $j++) {
+                $position = new Position(Letter::value($j - 1), $i);
+                $isShip = false;
+                foreach ($fleet as $ship) {
+                    if (in_array($position, $ship->getPositions())) {
+                        $isShip = true;
+                        break;
+                    }
+                }
+                $line .= $isShip ? "X" : " ";
+                $line .= " ";
+            }
+            $line .= "|";
+            self::$console->printColoredLn($line, Color::YELLOW);
+        }
+
+        self::$console->printColoredLn("  +----------------+", Color::YELLOW);
     }
 }

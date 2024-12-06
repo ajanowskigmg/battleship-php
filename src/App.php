@@ -95,6 +95,17 @@ class App
                     $start = readline("");
                     $startPos = self::parsePosition($start);
 
+                    // Calculate all ship positions
+                    $shipPositions = self::calculateShipPositions($startPos, 'R', 1);
+
+                    // Validate collisions with other ships
+                    foreach ($shipPositions as $position) {
+                        $pos = self::parsePosition($position);
+                        if (self::isCollisionWithOtherShips($pos, self::$myFleet)) {
+                            throw new Exception("Ships cannot be placed adjacent to each other!");
+                        }
+                    }
+
                     self::$console->println("Enter direction (R/D):");
                     $direction = strtoupper(readline(""));
 

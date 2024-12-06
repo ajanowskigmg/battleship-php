@@ -84,6 +84,7 @@ class App
         foreach (self::$myFleet as $ship) {
             while (true) {
                 try {
+                    self::drawMap(self::$myFleet);
                     self::$console->println();
                     self::$console->printColoredLn(
                         sprintf("Enter positions for %s (size: %s)", $ship->getName(), $ship->getSize()),
